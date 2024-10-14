@@ -1,0 +1,18 @@
+server:
+    port: "7093"
+    static: "public"
+    templateDir: "views"
+    isOpenSupportSpa: 0
+
+database:
+    dbname: "cb_toolbox"
+    username: "root"
+    password: "123456"
+
+cacher:
+    db: 0
+    password: ""
+    address: "localhost:6379"
+
+# gateway:
+#     domain: "http://localhost:7077"
