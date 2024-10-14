@@ -1,7 +1,7 @@
 package mvc
 
 import (
-	"wgenerator/definitions"
+	"github.com/cabbagen/wgenerator/definitions"
 
 	"gorm.io/gorm"
 )

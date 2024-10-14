@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	"wgenerator/context"
+
+	"github.com/cabbagen/wgenerator/context"
 
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"

@@ -2,7 +2,8 @@ package middlewares
 
 import (
 	"net/http"
-	"wgenerator/context"
+
+	"github.com/cabbagen/wgenerator/context"
 )
 
 var defaultCorsOptions map[string]string = map[string]string{

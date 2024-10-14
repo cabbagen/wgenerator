@@ -3,8 +3,9 @@ package middlewares
 import (
 	"fmt"
 	"net/http"
-	"wgenerator/context"
-	"wgenerator/definitions"
+
+	"github.com/cabbagen/wgenerator/context"
+	"github.com/cabbagen/wgenerator/definitions"
 )
 
 func HandlePanicRecover(c *context.WGContext) {

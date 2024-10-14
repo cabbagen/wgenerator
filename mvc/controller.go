@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
-	"wgenerator/context"
-	"wgenerator/definitions"
-	"wgenerator/providers"
+
+	"github.com/cabbagen/wgenerator/context"
+	"github.com/cabbagen/wgenerator/definitions"
+	"github.com/cabbagen/wgenerator/providers"
 )
 
 type BaseController struct {

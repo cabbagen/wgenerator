@@ -8,8 +8,8 @@ package conf
 import (
 	"fmt"
 	"os"
-	"wgenerator/definitions"
 
+	"github.com/cabbagen/wgenerator/definitions"
 	"gopkg.in/yaml.v3"
 )
 

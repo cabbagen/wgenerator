@@ -3,9 +3,10 @@ package wgenerator
 import (
 	"fmt"
 	"net/http"
-	"wgenerator/caches"
-	"wgenerator/conf"
-	"wgenerator/databases"
+
+	"github.com/cabbagen/wgenerator/caches"
+	"github.com/cabbagen/wgenerator/conf"
+	"github.com/cabbagen/wgenerator/databases"
 
 	"github.com/gin-gonic/gin"
 )

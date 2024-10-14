@@ -1,7 +1,7 @@
 package mvc
 
 import (
-	"wgenerator/context"
+	"github.com/cabbagen/wgenerator/context"
 )
 
 var GlobalAllRoutes []WGRoute
