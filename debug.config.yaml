@@ -14,5 +14,3 @@ cacher:
     password: ""
     address: "localhost:6379"
 
-# gateway:
-#     domain: "http://localhost:7077"

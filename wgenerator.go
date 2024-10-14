@@ -28,13 +28,13 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 	engine, settings := gin.Default(withFuncs...), getApplicationConfs()
 
 	// 静态目录
-	if settings["server"]["StaticDir"] != "" {
-		engine.Static("public", settings["server"]["StaticDir"].(string))
+	if settings["server"]["static"] != "" {
+		engine.Static("public", settings["server"]["static"].(string))
 	}
 
 	// 模板文件
-	if settings["server"]["TemplateDir"] != "" {
-		engine.LoadHTMLGlob(fmt.Sprintf("%s/**/*.html", settings["server"]["TemplateDir"].(string)))
+	if settings["server"]["templateDir"] != "" {
+		engine.LoadHTMLGlob(fmt.Sprintf("%s/**/*.html", settings["server"]["templateDir"].(string)))
 	}
 
 	// 数据库支持
@@ -48,7 +48,7 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 	}
 
 	// SPA 支持
-	if settings["server"]["TemplateDir"] != "" && settings["server"]["IsOpenSupportSpa"].(int) == 1 {
+	if settings["server"]["templateDir"] != "" && settings["server"]["isOpenSupportSpa"].(int) == 1 {
 		handleRenderSPAHTMLFunc := func(ctx *gin.Context) {
 			ctx.HTML(http.StatusOK, "index.html", nil)
 		}
@@ -60,5 +60,5 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 }
 
 func (wge WGEngine) Bootstrap() {
-	wge.Run(getApplicationConfs()["server"]["port"].(string))
+	wge.Run(fmt.Sprintf(":%s", getApplicationConfs()["server"]["port"].(string)))
 }
