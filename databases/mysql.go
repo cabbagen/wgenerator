@@ -19,8 +19,6 @@ func ConnectMysql(username, password, database string) {
 	}
 
 	databaseHandler = dbf
-
-	fmt.Printf("connect mysql %v\n", dbf)
 }
 
 func GetDatabaseHandleInstance() *gorm.DB {

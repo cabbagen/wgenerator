@@ -1,6 +1,7 @@
 package mvc
 
 import (
+	"github.com/cabbagen/wgenerator/databases"
 	"github.com/cabbagen/wgenerator/definitions"
 
 	"gorm.io/gorm"
@@ -12,12 +13,15 @@ type QueryCondition struct {
 }
 
 type BaseRepository[T any] struct {
-	DBF       *gorm.DB
 	TableName string
 }
 
+func (br BaseRepository[T]) GetOriginalGormDB() *gorm.DB {
+	return databases.GetDatabaseHandleInstance()
+}
+
 func (br BaseRepository[T]) ReadlyTableQuery() *gorm.DB {
-	return br.DBF.Table(br.TableName).Debug()
+	return br.GetOriginalGormDB().Table(br.TableName).Debug()
 }
 
 func (br BaseRepository[T]) GetById(id int) (T, error) {
@@ -123,6 +127,7 @@ func (br BaseRepository[T]) UpdateColumns(qc QueryCondition, model T) (int64, er
 }
 
 type IRepository[T any] interface {
+	GetOriginalGormDB() *gorm.DB
 	Count(qc QueryCondition) (int64, error)
 	IsExists(qc QueryCondition) (bool, error)
 	GetById(id int) (T, error)
