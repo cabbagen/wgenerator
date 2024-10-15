@@ -18,6 +18,8 @@ func ConnectMysql(username, password, database string) {
 		panic(error.Error())
 	}
 
+	fmt.Printf("connect mysql %v\n", dbf)
+
 	databaseHandler = dbf
 }
 
