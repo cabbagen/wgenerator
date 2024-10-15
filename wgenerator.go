@@ -37,6 +37,8 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 		engine.LoadHTMLGlob(fmt.Sprintf("%s/**/*.html", settings["server"]["templateDir"].(string)))
 	}
 
+	fmt.Println(settings["database"]["dbname"], settings["database"]["username"], settings["database"]["password"])
+
 	// 数据库支持
 	if settings["database"]["dbname"] != "" && settings["database"]["username"] != "" && settings["database"]["password"] != "" {
 		databases.ConnectMysql(settings["database"]["username"].(string), settings["database"]["password"].(string), settings["database"]["dbname"].(string))
