@@ -5,41 +5,41 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/cabbagen/wgenerator/context"
 	"github.com/cabbagen/wgenerator/definitions"
 	"github.com/cabbagen/wgenerator/providers"
+	"github.com/gin-gonic/gin"
 )
 
 type BaseController struct {
 }
 
 // 响应失败
-func (tbc BaseController) OfFailResponse(ctx *context.WGContext, message string) {
+func (tbc BaseController) OfFailResponse(ctx *gin.Context, message string) {
 	ctx.JSON(http.StatusOK, definitions.NewResponse(definitions.ResponseCodeMap["fail"], nil, message))
 }
 
 // 响应成功
-func (tbc BaseController) OfSuccessResponse(ctx *context.WGContext, data interface{}) {
+func (tbc BaseController) OfSuccessResponse(ctx *gin.Context, data interface{}) {
 	ctx.JSON(http.StatusOK, definitions.NewResponse(definitions.ResponseCodeMap["succees"], data, ""))
 }
 
 // 响应二进制数据
-func (tbc BaseController) OfSuccessBytesResponse(ctx *context.WGContext, filename string, thunk []byte) {
-	if filename == "" {
-		ctx.Header("Content-Transfer-Encoding", "binary")
-	} else {
+func (tbc BaseController) OfSuccessBytesResponse(ctx *gin.Context, filename string, thunk []byte) {
+	if filename != "" {
 		ctx.Header("Content-Disposition", fmt.Sprintf("attachment;filename=%s", filename))
 	}
+
+	ctx.Header("Content-Transfer-Encoding", "binary")
 	ctx.Data(http.StatusOK, "application/octet-stream", thunk)
 }
 
 // 校验结构体
-func (tbc BaseController) HandleValidateRequestParams(ctx *context.WGContext, target *interface{}) error {
+func (tbc BaseController) HandleValidateRequestParams(ctx *gin.Context, target *interface{}) error {
 	return providers.HandleValidateRequestParamsWithGin(ctx, target)
 }
 
 // 文件上传
-func (tbc BaseController) HandleFileMultipartForm(ctx *context.WGContext) (*multipart.Form, error) {
+func (tbc BaseController) HandleFileMultipartForm(ctx *gin.Context) (*multipart.Form, error) {
 	form, error := ctx.MultipartForm()
 
 	if error != nil {

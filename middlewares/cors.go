@@ -3,7 +3,7 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/cabbagen/wgenerator/context"
+	"github.com/gin-gonic/gin"
 )
 
 var defaultCorsOptions map[string]string = map[string]string{
@@ -11,7 +11,7 @@ var defaultCorsOptions map[string]string = map[string]string{
 	"Access-Control-Allow-Headers": "content-type, token, mode, credentials, uid, x-requested-with",
 }
 
-func HandleCorsMiddleware(ctx *context.WGContext) {
+func HandleCorsMiddleware(ctx *gin.Context) {
 	for key, value := range defaultCorsOptions {
 		ctx.Header(key, value)
 	}

@@ -6,8 +6,7 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/cabbagen/wgenerator/context"
-
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -82,7 +81,7 @@ func HandleValidateRequestParams[T any](params T) error {
 }
 
 // gin 解析校验传参
-func HandleValidateRequestParamsWithGin[T any](context *context.WGContext, params *T) error {
+func HandleValidateRequestParamsWithGin[T any](context *gin.Context, params *T) error {
 	// 解析参数
 	if error := context.ShouldBind(params); error != nil {
 		return error

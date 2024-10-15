@@ -59,6 +59,6 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 	return WGEngine{engine}
 }
 
-func (wge WGEngine) Bootstrap() {
+func (wge WGEngine) WGRun() {
 	wge.Run(fmt.Sprintf(":%s", getApplicationConfs()["server"]["port"].(string)))
 }

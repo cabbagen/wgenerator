@@ -1,17 +1,15 @@
 package mvc
 
 import (
-	"github.com/cabbagen/wgenerator/context"
+	"github.com/gin-gonic/gin"
 )
 
 var GlobalAllRoutes []WGRoute
 
-type WGHandleFunc func(*context.WGContext)
-
 type WGRoute struct {
-	Method  string
 	Path    string
-	Handles []WGHandleFunc
+	Method  string
+	Handles []gin.HandlerFunc
 }
 
 func AppendGlobalRoutes(routes ...[]WGRoute) {
