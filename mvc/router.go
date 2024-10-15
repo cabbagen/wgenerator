@@ -7,9 +7,9 @@ import (
 var GlobalAllRoutes []WGRoute
 
 type WGRoute struct {
-	Path    string
-	Method  string
-	Handles []gin.HandlerFunc
+	Path     string
+	Method   string
+	Handlers []gin.HandlerFunc
 }
 
 func AppendGlobalRoutes(routes ...[]WGRoute) {

@@ -1,6 +1,8 @@
 package mvc
 
 import (
+	"fmt"
+
 	"github.com/cabbagen/wgenerator/definitions"
 
 	"gorm.io/gorm"
@@ -17,6 +19,7 @@ type BaseRepository[T any] struct {
 }
 
 func (br BaseRepository[T]) ReadlyTableQuery() *gorm.DB {
+	fmt.Printf("=======> %v\n\n", br.DBF)
 	return br.DBF.Table(br.TableName).Debug()
 }
 
