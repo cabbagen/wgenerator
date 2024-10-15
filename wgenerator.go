@@ -25,7 +25,7 @@ func getApplicationConfs() map[string]map[string]interface{} {
 }
 
 func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
-	engine, settings := gin.Default(withFuncs...), getApplicationConfs()
+	engine, settings := gin.Default(), getApplicationConfs()
 
 	// 静态目录
 	if settings["server"]["static"] != "" {
@@ -56,7 +56,7 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 		engine.NoRoute(handleRenderSPAHTMLFunc)
 	}
 
-	return WGEngine{engine}
+	return WGEngine{engine.With(withFuncs...)}
 }
 
 func (wge WGEngine) WGRun() {
