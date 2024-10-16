@@ -22,24 +22,24 @@ func HandleFeignRequest(uri, method string, params map[string]string, headers ma
 		client.SetBody(params)
 	}
 
-	if (method == resty.MethodPost || method == resty.MethodPut) && headers["content-type"] == "application/x-www-form-urlencoded" {
+	if (method == resty.MethodPost || method == resty.MethodPut) && headers["Content-Type"] == "application/x-www-form-urlencoded" {
 		client.SetFormData(params)
 	}
 
 	// 发送请求
-	repsonse, error := client.Execute(method, uri)
+	response, error := client.Execute(method, uri)
 
 	if error != nil {
 		return nil, errors.New("发送请求错误：" + error.Error())
 	}
 
-	if !repsonse.IsSuccess() {
-		return nil, errors.New("本次请求响应失败")
+	if !response.IsSuccess() {
+		return nil, errors.New("本次请求响应失败: " + response.Status())
 	}
 
-	result, resultJSON := repsonse.Body(), make(map[string]string)
+	result, resultJSON := response.Body(), make(map[string]string)
 
-	if strings.HasPrefix(repsonse.Header().Get("Content-Type"), "application/json") {
+	if strings.HasPrefix(response.Header().Get("Content-Type"), "application/json") {
 		error := json.Unmarshal(result, &resultJSON)
 		return resultJSON, error
 	}
@@ -62,22 +62,40 @@ func HandleFeignFileRequest(uri string, files []RequestFile, formData map[string
 	}
 
 	// 发送请求
-	repsonse, error := client.SetFormData(formData).Post(uri)
+	response, error := client.SetFormData(formData).Post(uri)
 
 	if error != nil {
 		return nil, errors.New("发送请求错误：" + error.Error())
 	}
 
-	if !repsonse.IsSuccess() {
-		return nil, errors.New("本次请求响应失败")
+	if !response.IsSuccess() {
+		return nil, errors.New("本次请求响应失败: " + response.Status())
 	}
 
-	result, resultJSON := repsonse.Body(), make(map[string]string)
+	result, resultJSON := response.Body(), make(map[string]string)
 
-	if strings.HasPrefix(repsonse.Header().Get("Content-Type"), "application/json") {
+	if strings.HasPrefix(response.Header().Get("Content-Type"), "application/json") {
 		error := json.Unmarshal(result, &resultJSON)
 		return resultJSON, error
 	}
 
 	return result, nil
+}
+
+func HandleFeignPutFileRequest(uri string, thunk []byte, headers map[string]string) (bool, error) {
+	if _, isExist := headers["Content-Type"]; !isExist {
+		headers["Content-Type"] = "application/octet-stream"
+	}
+
+	response, error := resty.New().R().SetHeaders(headers).SetBody(thunk).Put(uri)
+
+	if error != nil {
+		return false, errors.New("发送请求错误：" + error.Error())
+	}
+
+	if !response.IsSuccess() {
+		return false, errors.New("本次请求响应失败: " + response.Status())
+	}
+
+	return true, nil
 }
