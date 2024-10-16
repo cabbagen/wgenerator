@@ -1,7 +1,7 @@
 /**
  * 配置文件操作相关
  * ==========================================================
- * 配置文件规则: [debug|test|release|$custome].config.yaml
+ * 配置文件规则: [debug|test|release].config.yaml
  */
 package conf
 
@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cabbagen/wgenerator/definitions"
+	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v3"
 )
 
 func GetYamlFilePath() string {
-	mode := os.Getenv(definitions.WGeneratorENV)
+	mode := gin.Mode()
 
 	if mode == "" {
 		mode = "debug"
