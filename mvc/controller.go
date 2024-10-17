@@ -20,6 +20,7 @@ func (tbc BaseController) OfFailResponse(ctx *gin.Context, message string) {
 
 // 响应成功
 func (tbc BaseController) OfSuccessResponse(ctx *gin.Context, data interface{}) {
+	fmt.Printf("========> %d\n\n\n", definitions.NewResponse(definitions.ResponseCodeMap["succees"]))
 	ctx.JSON(http.StatusOK, definitions.NewResponse(definitions.ResponseCodeMap["succees"], data, ""))
 }
 
