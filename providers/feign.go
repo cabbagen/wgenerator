@@ -9,6 +9,35 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
+func HandleFeignProxyRequest(uriWithParams, method string, body []byte, headers map[string]string) (interface{}, error) {
+	client := resty.New().R().SetHeaders(headers)
+
+	// POST 方法相关
+	if method == resty.MethodPost || method == resty.MethodPut {
+		client.SetBody(body)
+	}
+
+	// 发送请求
+	response, error := client.Execute(method, uriWithParams)
+
+	if error != nil {
+		return nil, errors.New("发送请求错误：" + error.Error())
+	}
+
+	if !response.IsSuccess() {
+		return nil, errors.New("本次请求响应失败: " + response.Status())
+	}
+
+	result, resultJSON := response.Body(), make(map[string]interface{})
+
+	if strings.HasPrefix(response.Header().Get("Content-Type"), "application/json") {
+		error := json.Unmarshal(result, &resultJSON)
+		return resultJSON, error
+	}
+
+	return result, nil
+}
+
 func HandleFeignRequest(uri, method string, params map[string]string, headers map[string]string) (interface{}, error) {
 	client := resty.New().R().SetHeaders(headers)
 
