@@ -27,23 +27,23 @@ func getApplicationConfs() map[string]map[string]interface{} {
 func initApplicationPresets(engine *gin.Engine) {
 	settings := getApplicationConfs()
 
-	if settings["server"]["static"] != "" {
+	if settings["server"]["static"] != nil {
 		engine.Static("public", settings["server"]["static"].(string))
 	}
 
-	if settings["server"]["templateDir"] != "" {
+	if settings["server"]["templateDir"] != nil {
 		engine.LoadHTMLGlob(fmt.Sprintf("%s/**/*.html", settings["server"]["templateDir"].(string)))
 	}
 
-	if settings["database"]["dbname"] != "" && settings["database"]["username"] != "" && settings["database"]["password"] != "" {
+	if settings["database"]["dbname"] != nil && settings["database"]["username"] != nil && settings["database"]["password"] != nil {
 		databases.ConnectMysql(settings["database"]["username"].(string), settings["database"]["password"].(string), settings["database"]["dbname"].(string))
 	}
 
-	if settings["cacher"]["address"] != "" {
+	if settings["cacher"]["address"] != nil {
 		caches.InitRedisCacherInstance(settings["cacher"]["db"].(int), settings["cacher"]["address"].(string), settings["cacher"]["password"].(string))
 	}
 
-	if settings["server"]["templateDir"] != "" && settings["server"]["isOpenSupportSpa"].(int) == 1 {
+	if settings["server"]["templateDir"] != nil && settings["server"]["isOpenSupportSpa"] != nil && settings["server"]["isOpenSupportSpa"].(int) == 1 {
 		handleRenderSPAHTMLFunc := func(ctx *gin.Context) {
 			ctx.HTML(http.StatusOK, "index.html", nil)
 		}
