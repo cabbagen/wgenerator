@@ -37,7 +37,7 @@ func HandleFeignRequest(uri, method string, params map[string]string, headers ma
 		return nil, errors.New("本次请求响应失败: " + response.Status())
 	}
 
-	result, resultJSON := response.Body(), make(map[string]string)
+	result, resultJSON := response.Body(), make(map[string]interface{})
 
 	if strings.HasPrefix(response.Header().Get("Content-Type"), "application/json") {
 		error := json.Unmarshal(result, &resultJSON)
@@ -72,7 +72,7 @@ func HandleFeignFileRequest(uri string, files []RequestFile, formData map[string
 		return nil, errors.New("本次请求响应失败: " + response.Status())
 	}
 
-	result, resultJSON := response.Body(), make(map[string]string)
+	result, resultJSON := response.Body(), make(map[string]interface{})
 
 	if strings.HasPrefix(response.Header().Get("Content-Type"), "application/json") {
 		error := json.Unmarshal(result, &resultJSON)
