@@ -42,12 +42,12 @@ func HandleFeignProxyRequest(uriWithParams, method string, body []byte, headers 
 	return handleRestyResponseAdaptor(response)
 }
 
-func HandleFeignRequest(uri, method string, params map[string]string, headers map[string]string) (interface{}, error) {
+func HandleFeignRequest(uri, method string, params interface{}, headers map[string]string) (interface{}, error) {
 	client := resty.New().R().SetHeaders(headers)
 
 	// GET 方法相关
 	if method == resty.MethodGet || method == resty.MethodHead || method == resty.MethodDelete {
-		client.SetQueryParams(params)
+		client.SetQueryParams(params.(map[string]string))
 	}
 
 	// POST 方法相关
@@ -56,7 +56,7 @@ func HandleFeignRequest(uri, method string, params map[string]string, headers ma
 	}
 
 	if (method == resty.MethodPost || method == resty.MethodPut) && headers["Content-Type"] == "application/x-www-form-urlencoded" {
-		client.SetFormData(params)
+		client.SetFormData(params.(map[string]string))
 	}
 
 	// 发送请求
