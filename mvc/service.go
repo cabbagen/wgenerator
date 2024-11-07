@@ -14,12 +14,16 @@ func (tbs BaseService[T]) IsExists(qc QueryCondition) (bool, error) {
 	return tbs.Repositoriy.IsExists(qc)
 }
 
-func (tbs BaseService[T]) GetById(id int) (T, error) {
+func (tbs BaseService[T]) GetById(id int64) (T, error) {
 	return tbs.Repositoriy.GetById(id)
 }
 
 func (tbs BaseService[T]) GetOneWithCondition(qc QueryCondition) (T, error) {
 	return tbs.Repositoriy.GetOneWithCondition(qc)
+}
+
+func (tbs BaseService[T]) ListByIds(ids []int64) ([]T, error) {
+	return tbs.Repositoriy.ListByIds(ids)
 }
 
 func (tbs BaseService[T]) ListWithCondition(qc QueryCondition) ([]T, error) {
@@ -30,7 +34,7 @@ func (tbs BaseService[T]) ListWithConditionByPagination(qc QueryCondition, page,
 	return tbs.Repositoriy.ListWithConditionByPagination(qc, page, pageSize)
 }
 
-func (tbs BaseService[T]) RemoveByIds(ids []int) (int64, error) {
+func (tbs BaseService[T]) RemoveByIds(ids []int64) (int64, error) {
 	return tbs.Repositoriy.RemoveByIds(ids)
 }
 

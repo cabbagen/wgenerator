@@ -24,7 +24,7 @@ func (br BaseRepository[T]) ReadlyTableQuery() *gorm.DB {
 	return br.GetOriginalGormDB().Table(br.TableName).Debug()
 }
 
-func (br BaseRepository[T]) GetById(id int) (T, error) {
+func (br BaseRepository[T]) GetById(id int64) (T, error) {
 	return br.GetOneWithCondition(QueryCondition{"id = ?", []interface{}{id}})
 }
 
@@ -51,7 +51,7 @@ func (br BaseRepository[T]) IsExists(qc QueryCondition) (bool, error) {
 	return count > 0, error
 }
 
-func (br BaseRepository[T]) ListByIds(ids []int) ([]T, error) {
+func (br BaseRepository[T]) ListByIds(ids []int64) ([]T, error) {
 	return br.ListWithCondition(QueryCondition{"id IN ?", []interface{}{ids}})
 }
 
@@ -73,7 +73,7 @@ func (br BaseRepository[T]) ListWithConditionByPagination(qc QueryCondition, pag
 	return pagination, nil
 }
 
-func (br BaseRepository[T]) RemoveByIds(ids []int) (int64, error) {
+func (br BaseRepository[T]) RemoveByIds(ids []int64) (int64, error) {
 	return br.RemoveWithCondition(QueryCondition{"id IN ?", []interface{}{ids}})
 }
 
@@ -130,11 +130,12 @@ type IRepository[T any] interface {
 	GetOriginalGormDB() *gorm.DB
 	Count(qc QueryCondition) (int64, error)
 	IsExists(qc QueryCondition) (bool, error)
-	GetById(id int) (T, error)
+	GetById(id int64) (T, error)
 	GetOneWithCondition(qc QueryCondition) (T, error)
+	ListByIds(ids []int64) ([]T, error)
 	ListWithCondition(qc QueryCondition) ([]T, error)
 	ListWithConditionByPagination(qc QueryCondition, page, pageSize int) (definitions.Pagination[T], error)
-	RemoveByIds(ids []int) (int64, error)
+	RemoveByIds(ids []int64) (int64, error)
 	RemoveWithCondition(qc QueryCondition) (int64, error)
 	SaveBatch(models []T, batchSize int) (int64, error)
 	Save(model T) (int64, error)
