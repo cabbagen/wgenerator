@@ -1,3 +1,5 @@
+# 这是一份示例
+# ================================
 server:
     port: "7093"
     static: "public"
@@ -8,6 +10,7 @@ database:
     dbname: "cb_toolbox"
     username: "root"
     password: "123456"
+    address: "localhost:3306"
 
 cacher:
     db: 0

@@ -9,8 +9,8 @@ import (
 
 var databaseHandler *gorm.DB = nil
 
-func ConnectMysql(username, password, database string) {
-	dsn := fmt.Sprintf("%s:%s@/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, database)
+func ConnectMysql(username, password, address, database string) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, address, database)
 
 	dbf, error := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 

@@ -35,8 +35,8 @@ func initApplicationPresets(engine *gin.Engine) {
 		engine.LoadHTMLGlob(fmt.Sprintf("%s/**/*.html", settings["server"]["templateDir"].(string)))
 	}
 
-	if settings["database"]["dbname"] != nil && settings["database"]["username"] != nil && settings["database"]["password"] != nil {
-		databases.ConnectMysql(settings["database"]["username"].(string), settings["database"]["password"].(string), settings["database"]["dbname"].(string))
+	if settings["database"]["dbname"] != nil && settings["database"]["username"] != nil && settings["database"]["address"] != nil && settings["database"]["password"] != nil {
+		databases.ConnectMysql(settings["database"]["username"].(string), settings["database"]["password"].(string), settings["database"]["address"].(string), settings["database"]["dbname"].(string))
 	}
 
 	if settings["cacher"]["address"] != nil {
