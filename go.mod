@@ -1,4 +1,4 @@
-module github.com/cabbagen/wgenerator
+module github.com/cabbagen/wgenerator/v2
 
 go 1.22.0
 
