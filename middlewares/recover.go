@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/cabbagen/wgenerator/definitions"
+	"github.com/cabbagen/wgenerator/v2/definitions"
 	"github.com/gin-gonic/gin"
 )
 

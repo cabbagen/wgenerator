@@ -1,8 +1,8 @@
 package mvc
 
 import (
-	"github.com/cabbagen/wgenerator/databases"
-	"github.com/cabbagen/wgenerator/definitions"
+	"github.com/cabbagen/wgenerator/v2/databases"
+	"github.com/cabbagen/wgenerator/v2/definitions"
 
 	"gorm.io/gorm"
 )

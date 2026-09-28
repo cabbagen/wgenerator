@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/cabbagen/wgenerator/caches"
-	"github.com/cabbagen/wgenerator/conf"
-	"github.com/cabbagen/wgenerator/databases"
+	"github.com/cabbagen/wgenerator/v2/caches"
+	"github.com/cabbagen/wgenerator/v2/conf"
+	"github.com/cabbagen/wgenerator/v2/databases"
 
 	"github.com/gin-gonic/gin"
 )

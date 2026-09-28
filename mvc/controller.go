@@ -5,8 +5,8 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/cabbagen/wgenerator/definitions"
-	"github.com/cabbagen/wgenerator/providers"
+	"github.com/cabbagen/wgenerator/v2/definitions"
+	"github.com/cabbagen/wgenerator/v2/providers"
 	"github.com/gin-gonic/gin"
 )
 

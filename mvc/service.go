@@ -1,6 +1,6 @@
 package mvc
 
-import "github.com/cabbagen/wgenerator/definitions"
+import "github.com/cabbagen/wgenerator/v2/definitions"
 
 type BaseService[T any] struct {
 	Repositoriy IRepository[T]
