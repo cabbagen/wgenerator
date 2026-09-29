@@ -9,6 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/go-resty/resty/v2 v2.15.3
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/gookit/rotatefile v0.3.0
 	github.com/gookit/slog v0.7.1
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/redis/go-redis/v9 v9.6.1
@@ -32,7 +33,6 @@ require (
 	github.com/gookit/color v1.6.1 // indirect
 	github.com/gookit/goutil v0.7.6 // indirect
 	github.com/gookit/gsr v0.1.1 // indirect
-	github.com/gookit/rotatefile v0.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
