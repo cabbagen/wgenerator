@@ -17,3 +17,16 @@ cacher:
     password: ""
     address: "localhost:6379"
 
+logger:
+    type: "console"
+    # Warn, Notice, Info, Debug, Trace, Panic, Fatal, Error
+    levels:
+        - "Warn"
+        - "Notice"
+        - "Info"
+        - "Debug"
+        - "Trace"
+        - "Panic"
+        - "Fatal"
+        - "Error"
+    file: "logs/app.log"

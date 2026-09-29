@@ -99,7 +99,7 @@ func ConcatBySlice[T any](list []T, appendList []T) []T {
  * 拼接 Slice 为字符串返回
  */
 func JoinBySlice[T Outputable](list []T, separator string) string {
-	willJoinStrings := MapBySlice[T, string](list, func(value T, _ int) string {
+	willJoinStrings := MapBySlice(list, func(value T, _ int) string {
 		return value.ToString()
 	})
 	return strings.Join(willJoinStrings, separator)

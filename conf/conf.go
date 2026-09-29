@@ -6,8 +6,9 @@
 package conf
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v3"
@@ -19,21 +20,12 @@ func GetYamlFilePath() string {
 	if mode == "" {
 		mode = "debug"
 	}
-	return fmt.Sprintf("./%s.config.yaml", mode)
-}
 
-func ScanfYamlConfig(confPath string) (config map[string]map[string]interface{}, error error) {
-	datas, error := os.ReadFile(confPath)
+	_, file, _, _ := runtime.Caller(0)
 
-	if error != nil {
-		return config, error
-	}
+	root := filepath.Dir(filepath.Dir(file))
 
-	if error := yaml.Unmarshal(datas, &config); error != nil {
-		return config, error
-	}
-
-	return config, nil
+	return filepath.Join(root, mode+".config.yaml")
 }
 
 func ScanfBuildinYamlConfig() (config map[string]map[string]interface{}, error error) {
