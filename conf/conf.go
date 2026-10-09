@@ -6,13 +6,24 @@
 package conf
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v3"
 )
+
+var workspaceDir string = "."
+
+func init() {
+	if workspaceDir != "." {
+		return
+	}
+	if dir, err := os.Getwd(); err == nil {
+		workspaceDir = dir
+	}
+}
 
 func GetYamlFilePath() string {
 	mode := gin.Mode()
@@ -20,12 +31,7 @@ func GetYamlFilePath() string {
 	if mode == "" {
 		mode = "debug"
 	}
-
-	_, file, _, _ := runtime.Caller(0)
-
-	root := filepath.Dir(filepath.Dir(file))
-
-	return filepath.Join(root, mode+".config.yaml")
+	return filepath.Join(workspaceDir, fmt.Sprintf("./%s.config.yaml", mode))
 }
 
 func ScanfBuildinYamlConfig() (config map[string]map[string]interface{}, error error) {
