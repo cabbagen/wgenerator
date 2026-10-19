@@ -21,6 +21,11 @@ func handleMobileRegister(vf validator.FieldLevel) bool {
 	return regexp.MatchString(value)
 }
 
+// 密码校验 密码规则：大于 6 位、小于 18 位，可包含小写字母、大写字母、数字、特殊符号
+func HandlePasswordRegister(fl validator.FieldLevel) bool {
+	return regexp.MustCompile(`^[\x21-\x7e]{7,17}$`).MatchString(fl.Field().String())
+}
+
 // 校验传参
 func HandleValidateRequestParams[T any](params T) error {
 	if error := Validate.Struct(params); error != nil {

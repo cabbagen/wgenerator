@@ -14,7 +14,8 @@ import (
 
 // 全局自定义校验
 var GlobalCustomValidator map[string]validator.Func = map[string]validator.Func{
-	"mobile": handleMobileRegister,
+	"mobile":   handleMobileRegister,
+	"password": HandlePasswordRegister,
 }
 
 // 定义一个全局翻译器T

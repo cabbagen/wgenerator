@@ -2,7 +2,10 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // 字符串输出
@@ -122,4 +125,21 @@ func StructToMap(src interface{}) (map[string]interface{}, error) {
 	}
 
 	return result, nil
+}
+
+/**
+ * 对密码进行盐值处理
+ */
+func HandlePasswordSaltedHash(password string) (string, error) {
+	if hash, error := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost); error == nil {
+		return string(hash), nil
+	}
+	return "", errors.New("密码盐值处理失败")
+}
+
+/**
+ * 对密码进行比较
+ */
+func HandlePasswordCompare(password string, hash string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
