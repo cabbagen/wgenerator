@@ -30,3 +30,8 @@ logger:
         - "Fatal"
         - "Error"
     file: "logs/app.log"
+
+asynq:
+    db: 1
+    password: ""
+    address: "localhost:6379"
