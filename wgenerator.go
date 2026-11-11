@@ -15,7 +15,7 @@ type WGEngine struct {
 	*gin.Engine
 }
 
-func getApplicationConfs() map[string]map[string]interface{} {
+func getApplicationConfs() conf.ApplicationConfig {
 	settings, error := conf.ScanfBuildinYamlConfig()
 
 	if error != nil {
@@ -27,23 +27,23 @@ func getApplicationConfs() map[string]map[string]interface{} {
 func initApplicationPresets(engine *gin.Engine) {
 	settings := getApplicationConfs()
 
-	if settings["server"]["static"] != nil {
-		engine.Static("public", settings["server"]["static"].(string))
+	if settings.Server.Static != "" {
+		engine.Static("public", settings.Server.Static)
 	}
 
-	if settings["server"]["templateDir"] != nil {
-		engine.LoadHTMLGlob(fmt.Sprintf("%s/**/*.html", settings["server"]["templateDir"].(string)))
+	if settings.Server.TemplateDir != "" {
+		engine.LoadHTMLGlob(fmt.Sprintf("%s/**/*.html", settings.Server.TemplateDir))
 	}
 
-	if settings["database"]["dbname"] != nil && settings["database"]["username"] != nil && settings["database"]["address"] != nil && settings["database"]["password"] != nil {
-		databases.ConnectMysql(settings["database"]["username"].(string), settings["database"]["password"].(string), settings["database"]["address"].(string), settings["database"]["dbname"].(string))
+	if settings.Database.DBName != "" && settings.Database.Username != "" && settings.Database.Address != "" && settings.Database.Password != "" {
+		databases.ConnectMysql(settings.Database.Username, settings.Database.Password, settings.Database.Address, settings.Database.DBName)
 	}
 
-	if settings["cacher"]["address"] != nil {
-		caches.InitRedisCacherInstance(settings["cacher"]["db"].(int), settings["cacher"]["address"].(string), settings["cacher"]["password"].(string))
+	if settings.Cacher.Address != "" {
+		caches.InitRedisCacherInstance(settings.Cacher.DB, settings.Cacher.Address, settings.Cacher.Password)
 	}
 
-	if settings["server"]["templateDir"] != nil && settings["server"]["isOpenSupportSpa"] != nil && settings["server"]["isOpenSupportSpa"].(int) == 1 {
+	if settings.Server.TemplateDir != "" && settings.Server.IsOpenSupportSpa == 1 {
 		handleRenderSPAHTMLFunc := func(ctx *gin.Context) {
 			ctx.HTML(http.StatusOK, "index.html", nil)
 		}
@@ -57,5 +57,5 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 }
 
 func (wge WGEngine) WGRun() {
-	wge.Run(fmt.Sprintf(":%s", getApplicationConfs()["server"]["port"].(string)))
+	wge.Run(fmt.Sprintf(":%s", getApplicationConfs().Server.Port))
 }

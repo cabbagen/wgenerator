@@ -34,7 +34,7 @@ func GetYamlFilePath() string {
 	return filepath.Join(workspaceDir, fmt.Sprintf("./%s.config.yaml", mode))
 }
 
-func ScanfBuildinYamlConfig() (config map[string]map[string]interface{}, error error) {
+func ScanfBuildinYamlConfig() (config ApplicationConfig, error error) {
 	datas, error := os.ReadFile(GetYamlFilePath())
 
 	if error != nil {

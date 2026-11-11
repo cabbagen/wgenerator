@@ -32,6 +32,8 @@ logger:
     file: "logs/app.log"
 
 asynq:
-    db: 1
-    password: ""
-    address: "localhost:6379"
+    redis:
+        addr: "localhost:6379"
+        password: ""
+        db: 1
+    concurrency: 10
