@@ -88,11 +88,19 @@ func RegisterAsynqTask(client *asynq.Client, task AsyncqTask, option ...asynq.Op
 	return client.Enqueue(asynq.NewTask(task.TaskId, task.TaskPayload, option...))
 }
 
-func StartAsynqTaskMonitoring(server *asynq.Server, handlerMap map[string]func(context.Context, *asynq.Task) error) error {
+func StartAsynqTaskMonitoring(handlerMap map[string]func(context.Context, *asynq.Task) error) error {
+	server := GetAsynqServerSingleInstance()
+
 	mux := asynq.NewServeMux()
 
 	for taskName, handler := range handlerMap {
 		mux.HandleFunc(taskName, handler)
 	}
+
 	return server.Start(mux)
+}
+
+func ShutdownAsynq() {
+	CloseAsynqServerSingleInstance()
+	CloseAsynqClientSingleInstance()
 }

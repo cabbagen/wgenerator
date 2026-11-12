@@ -1,8 +1,15 @@
 package wgenerator
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/cabbagen/wgenerator/v2/caches"
 	"github.com/cabbagen/wgenerator/v2/conf"
@@ -60,6 +67,42 @@ func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
 	return WGEngine{gin.New(append(withFuncs, initApplicationPresets)...)}
 }
 
-func (wge WGEngine) WGRun() {
-	wge.Run(fmt.Sprintf(":%s", getApplicationConfs().Server.Port))
+func (wge WGEngine) WGRun(shutdownHooks ...func()) {
+	httpSrv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", getApplicationConfs().Server.Port),
+		Handler: wge.Engine,
+	}
+
+	errCh := make(chan error, 1)
+
+	go func() {
+		errCh <- httpSrv.ListenAndServe()
+	}()
+
+	quit := make(chan os.Signal, 1)
+
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	select {
+	case <-quit:
+		signal.Stop(quit)
+	case err := <-errCh:
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("http server error: %v", err)
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	defer cancel()
+
+	if err := httpSrv.Shutdown(ctx); err != nil {
+		log.Printf("http server shutdown: %v", err)
+	}
+
+	for _, hook := range shutdownHooks {
+		if hook != nil {
+			hook()
+		}
+	}
 }
