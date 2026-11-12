@@ -7,7 +7,6 @@ import (
 	"github.com/cabbagen/wgenerator/v2/caches"
 	"github.com/cabbagen/wgenerator/v2/conf"
 	"github.com/cabbagen/wgenerator/v2/databases"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -50,10 +49,15 @@ func initApplicationPresets(engine *gin.Engine) {
 		engine.Handle("GET", "/", handleRenderSPAHTMLFunc)
 		engine.NoRoute(handleRenderSPAHTMLFunc)
 	}
+
+	// 添加日志中间件
+	if mode := gin.Mode(); mode == "debug" || mode == "" {
+		engine.Use(gin.Logger())
+	}
 }
 
 func WGDefault(withFuncs ...gin.OptionFunc) WGEngine {
-	return WGEngine{gin.Default(append(withFuncs, initApplicationPresets)...)}
+	return WGEngine{gin.New(append(withFuncs, initApplicationPresets)...)}
 }
 
 func (wge WGEngine) WGRun() {

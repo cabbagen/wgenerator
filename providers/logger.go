@@ -3,6 +3,7 @@ package providers
 import (
 	"log"
 	"strings"
+	"sync"
 
 	"github.com/cabbagen/wgenerator/v2/conf"
 	"github.com/cabbagen/wgenerator/v2/utils"
@@ -11,22 +12,43 @@ import (
 	"github.com/gookit/slog/handler"
 )
 
-var singleLogger ILogger = nil
+var (
+	once         sync.Once
+	singleLogger ILogger
+)
 
 type ILogger interface {
 	FlushAll()
+	Slog() *slog.Logger
 	Logger(level slog.Level, args ...any)
 	WithFieldsLogger(infos map[string]interface{}, level slog.Level, args ...any)
 }
 
 type logger struct {
+	// 日志实例
 	logger *slog.Logger
+
+	// 输出类型
+	output []string
+
+	// 日志级别
+	levels []slog.Level
+
+	// file 日志文件路径
+	file string
+
+	// console 模板
+	template string
 }
 
 func (l *logger) FlushAll() {
 	if err := l.logger.FlushAll(); err != nil {
 		log.Printf("Error flushing logs: %v", err)
 	}
+}
+
+func (l *logger) Slog() *slog.Logger {
+	return l.logger
 }
 
 func (l *logger) Logger(level slog.Level, args ...any) {
@@ -37,7 +59,7 @@ func (l *logger) WithFieldsLogger(infos map[string]interface{}, level slog.Level
 	l.logger.WithFields(infos).Log(level, args...)
 }
 
-func newConsoleLogger(slogger *slog.Logger, levels []slog.Level, settings conf.LoggerConfig) {
+func appendConsoleLoggerHandler(slogger *slog.Logger, levels []slog.Level, settings conf.LoggerConfig) {
 	consoleHandler := handler.ConsoleWithLevels(levels)
 
 	if settings.Template != "" {
@@ -46,7 +68,7 @@ func newConsoleLogger(slogger *slog.Logger, levels []slog.Level, settings conf.L
 	slogger.AddHandler(consoleHandler)
 }
 
-func newFileLogger(slogger *slog.Logger, levels []slog.Level, settings conf.LoggerConfig) {
+func appendFileLoggerHandler(slogger *slog.Logger, levels []slog.Level, settings conf.LoggerConfig) {
 	confFns := []handler.ConfigFn{
 		handler.WithLogLevels(levels),
 		handler.WithMaxSize(50 * 1024 * 1024),
@@ -60,36 +82,39 @@ func newFileLogger(slogger *slog.Logger, levels []slog.Level, settings conf.Logg
 		panic(error)
 	}
 
-	// NewRotateFileHandler 不会读取 WithUseJSON，需要单独设置 formatter。
 	fileHandler.SetFormatter(slog.NewJSONFormatter())
 
 	slogger.AddHandler(fileHandler)
 }
 
 func NewLoggerFactory() ILogger {
-	if singleLogger != nil {
-		return singleLogger
-	}
+	once.Do(func() {
+		if singleLogger != nil {
+			return
+		}
 
-	settings, _ := conf.ScanfBuildinYamlConfig()
+		settings, _ := conf.ScanfBuildinYamlConfig()
 
-	slogger, levels := slog.New(), utils.MapBySlice(settings.Logger.Levels, func(level string, _ int) slog.Level {
-		return slog.LevelByName(strings.ToUpper(level))
+		slogger, levels := slog.New(), utils.MapBySlice(settings.Logger.Levels, func(level string, _ int) slog.Level {
+			return slog.LevelByName(strings.ToUpper(level))
+		})
+
+		for _, output := range settings.Logger.Output {
+			if output == "file" {
+				appendFileLoggerHandler(slogger, levels, settings.Logger)
+			}
+			if output == "console" {
+				appendConsoleLoggerHandler(slogger, levels, settings.Logger)
+			}
+		}
+
+		singleLogger = &logger{
+			logger:   slogger,
+			output:   settings.Logger.Output,
+			levels:   levels,
+			file:     settings.Logger.File,
+			template: settings.Logger.Template,
+		}
 	})
-
-	// 控制台日志
-	if settings.Logger.Type == "console" {
-		newConsoleLogger(slogger, levels, settings.Logger)
-	}
-
-	// 文件日志
-	if settings.Logger.Type == "file" {
-		newFileLogger(slogger, levels, settings.Logger)
-	}
-
-	singleLogger = &logger{
-		logger: slogger,
-	}
-
 	return singleLogger
 }

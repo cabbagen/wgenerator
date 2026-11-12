@@ -38,7 +38,7 @@ type CacherConfig struct {
 }
 
 type LoggerConfig struct {
-	Type     string   `yaml:"type"`
+	Output   []string `yaml:"output"`
 	Levels   []string `yaml:"levels"`
 	File     string   `yaml:"file"`
 	Template string   `yaml:"template"`

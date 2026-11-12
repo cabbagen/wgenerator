@@ -18,8 +18,9 @@ cacher:
     address: "localhost:6379"
 
 logger:
-    type: "console"
-    # Warn, Notice, Info, Debug, Trace, Panic, Fatal, Error
+    output:
+        - "file"
+        - "console"
     levels:
         - "Warn"
         - "Notice"
@@ -30,6 +31,7 @@ logger:
         - "Fatal"
         - "Error"
     file: "logs/app.log"
+    template: ""
 
 asynq:
     redis:

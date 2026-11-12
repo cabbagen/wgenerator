@@ -2,71 +2,97 @@ package providers
 
 import (
 	"context"
-	"log"
+	"sync"
 
 	"github.com/cabbagen/wgenerator/v2/conf"
 	"github.com/hibiken/asynq"
 )
 
+// 互斥锁
 var (
-	asynqClient *asynq.Client = nil
-	asynqServer *asynq.Server = nil
+	asynqClientMu sync.Mutex
+	asynqServerMu sync.Mutex
 )
 
-func getAsynqConfig() (asynq.RedisClientOpt, asynq.Config) {
-	config, error := conf.ScanfBuildinYamlConfig()
+// 单例实例
+var (
+	asynqClient *asynq.Client
+	asynqServer *asynq.Server
+)
 
-	if error != nil {
-		panic(error)
+type AsyncqTask struct {
+	TaskId      string
+	TaskPayload []byte
+}
+
+func getAsynqConfig() (asynq.RedisClientOpt, asynq.Config) {
+	config, err := conf.ScanfBuildinYamlConfig()
+
+	if err != nil {
+		panic(err)
 	}
 
 	return asynq.RedisClientOpt{DB: config.Asynq.Redis.DB, Addr: config.Asynq.Redis.Addr, Password: config.Asynq.Redis.Password}, asynq.Config{Concurrency: config.Asynq.Concurrency}
 }
 
 func GetAsynqClientSingleInstance() *asynq.Client {
-	redisConnOpt, _ := getAsynqConfig()
+	asynqClientMu.Lock()
+
+	defer asynqClientMu.Unlock()
 
 	if asynqClient == nil {
+		redisConnOpt, _ := getAsynqConfig()
 		asynqClient = asynq.NewClient(redisConnOpt)
 	}
+
 	return asynqClient
 }
 
 func GetAsynqServerSingleInstance() *asynq.Server {
-	redisConnOpt, asynqConfig := getAsynqConfig()
+	asynqServerMu.Lock()
+
+	defer asynqServerMu.Unlock()
 
 	if asynqServer == nil {
+		redisConnOpt, asynqConfig := getAsynqConfig()
 		asynqServer = asynq.NewServer(redisConnOpt, asynqConfig)
 	}
 	return asynqServer
 }
 
 func CloseAsynqClientSingleInstance() {
-	if asynqClient != nil {
-		asynqClient.Close()
+	asynqClientMu.Lock()
+
+	defer asynqClientMu.Unlock()
+
+	if asynqClient == nil {
+		return
 	}
+	_ = asynqClient.Close()
 	asynqClient = nil
 }
 
 func CloseAsynqServerSingleInstance() {
-	if asynqServer != nil {
-		asynqServer.Shutdown()
+	asynqServerMu.Lock()
+
+	defer asynqServerMu.Unlock()
+
+	if asynqServer == nil {
+		return
 	}
+	asynqServer.Shutdown()
 	asynqServer = nil
 }
 
-func RegisterAsynqTask(client *asynq.Client, taskName string, taskPayload []byte, option ...asynq.Option) (*asynq.TaskInfo, error) {
-	return client.Enqueue(asynq.NewTask(taskName, taskPayload, option...))
+func RegisterAsynqTask(client *asynq.Client, task AsyncqTask, option ...asynq.Option) (*asynq.TaskInfo, error) {
+	return client.Enqueue(asynq.NewTask(task.TaskId, task.TaskPayload, option...))
 }
 
-func ServerAsynqTaskMonitering(server *asynq.Server, handlerMap map[string]func(context.Context, *asynq.Task) error) {
+func StartAsynqTaskMonitoring(server *asynq.Server, handlerMap map[string]func(context.Context, *asynq.Task) error) error {
 	mux := asynq.NewServeMux()
 
 	for taskName, handler := range handlerMap {
 		mux.HandleFunc(taskName, handler)
 	}
-
-	if err := server.Run(mux); err != nil {
-		log.Fatalf("could not run server: %v", err)
-	}
+	return server.Start(mux)
 }
