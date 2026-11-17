@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
+	"strconv"
 
 	"github.com/cabbagen/wgenerator/v2/definitions"
 	"github.com/gin-gonic/gin"
@@ -46,12 +47,65 @@ func HandleValidateRequestParams[T any](params T) error {
 	return nil
 }
 
+func handleApplyDefaultTags(params any) {
+	value := reflect.ValueOf(params)
+
+	if value.Kind() != reflect.Ptr || value.IsNil() {
+		return
+	}
+
+	value = value.Elem()
+
+	if value.Kind() != reflect.Struct {
+		return
+	}
+
+	structType := value.Type()
+
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Field(i)
+
+		if !field.CanSet() || !field.IsZero() {
+			continue
+		}
+
+		defaultValue := structType.Field(i).Tag.Get("default")
+
+		if defaultValue == "" {
+			continue
+		}
+
+		switch field.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			if parsed, err := strconv.ParseInt(defaultValue, 10, 64); err == nil {
+				field.SetInt(parsed)
+			}
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			if parsed, err := strconv.ParseUint(defaultValue, 10, 64); err == nil {
+				field.SetUint(parsed)
+			}
+		case reflect.Float32, reflect.Float64:
+			if parsed, err := strconv.ParseFloat(defaultValue, 64); err == nil {
+				field.SetFloat(parsed)
+			}
+		case reflect.Bool:
+			if parsed, err := strconv.ParseBool(defaultValue); err == nil {
+				field.SetBool(parsed)
+			}
+		case reflect.String:
+			field.SetString(defaultValue)
+		}
+	}
+}
+
 // gin 解析校验传参
 func HandleValidateRequestParamsWithGin[T any](context *gin.Context, params *T) error {
 	// 解析参数
 	if error := context.ShouldBind(params); error != nil {
 		return error
 	}
+
+	handleApplyDefaultTags(params)
 
 	// 参数校验
 	if error := HandleValidateRequestParams(*params); error != nil {
